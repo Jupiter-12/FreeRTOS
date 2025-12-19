@@ -1,0 +1,193 @@
+# dot files
+# /.vscode/launch.json
+# /.settings
+/.eide/log
+/.eide.usr.ctx.json
+
+# project out
+/build
+/bin
+/obj
+/out
+
+# eide template
+*.ept
+*.eide-template
+
+# .codegpt
+
+# ---> C
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+# *.lib
+# *.a
+# *.la
+# *.lo
+
+# Shared objects (inc. Windows DLLs)
+# *.dll
+# *.so
+# *.so.*
+# *.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# ---> C++
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+# *.so
+# *.dylib
+# *.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+# *.lai
+# *.la
+# *.a
+# *.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# ---> uVision
+# git ignore file for Keil µVision Project
+
+# µVision 5 and µVision 4 Project screen layout file
+# *.uvguix.*
+# *.uvgui.*
+# Project/
+
+# Listing Files
+# *.i
+# *.lst
+# *.m51
+# *.m66
+# *.map
+
+# Object Files
+*.axf
+*.b[0-2][0-9]
+*.b3[0-1]
+*.bak
+*.build_log.htm
+*.crf
+*.d
+*.dep
+*.elf
+*.htm
+*.iex
+*.lnp
+*.o
+*.obj
+*.sbr
+
+# Firmware Files
+*.bin
+*.h86
+*.hex
+
+# Build Files
+# .bat
+
+# Debugger Files
+# .ini
+
+# JLink Files
+JLinkLog.txt
+
+# Clangd
+.clangd
+# 插件自动生成
+
+# uv2csolution
+uv2csolution.log
+
+# Csolution Output Files
+tmp
+out
+*.cprj
+*.cbuild.yml
+
+# EIDE Files
+# .eide/
+# build/
+# .pack/
+# .eide_clang-format
+# .eide.usr.ctx.json
+
+# Local History
+.history/
+.VSCodeCounter/
+.specstory/
+
+# Other Files
+.claude/
+
+# Custom
+# Libraries/
+# .cmsis/
+# .vscode/
+.VSCodeCounter/
+# *.code-workspace
+# *.clang-format
+# *.patch
+# *.zip
+abort/
+# *.gitignore
+
+# RTE_Components.h
