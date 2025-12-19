@@ -7,7 +7,34 @@ srcDirs: []
 virtualFolder:
   name: <virtual_root>
   files: []
-  folders: []
+  folders:
+    - name: user
+      files:
+        - path: src/user/main.c
+        - path: src/libraries/Device/ST/STM32F4xx/Source/system_stm32f4xx.c
+      folders: []
+    - name: libraries
+      files: []
+      folders:
+        - name: ST
+          files:
+            - path: src/libraries/Device/ST/STM32F4xx/Source/startup/startup_stm32f429_439xx.s
+          folders: []
+    - name: freertos
+      files: []
+      folders:
+        - name: RVDS
+          files: []
+          folders: []
+        - name: ports
+          files: []
+          folders: []
+        - name: source
+          files: []
+          folders: []
+    - name: doc
+      files: []
+      folders: []
 dependenceList: []
 outDir: build
 miscInfo:
@@ -15,12 +42,58 @@ miscInfo:
 targets:
   Debug:
     cppPreprocessAttrs:
-      defineList: []
-      incList: []
+      defineList:
+        - USE_STDPERIPH_DRIVER
+        - STM32F429_439xx
+      incList:
+        - src/libraries/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+        - src/libraries/Device/ST/STM32F4xx/Include
+        - src/libraries/Device/ST/STM32F4xx/StdPeriph_Driver/inc
       libList: []
     excludeList: []
-    toolchain: GCC
+    toolchain: AC6
     toolchainConfigMap:
+      AC6:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: none
+        options:
+          version: 3
+          afterBuildTasks: []
+          asm-compiler:
+            $use: asm-clang
+            misc-controls: -masm=auto
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            language-c: gnu17
+            language-cpp: gnu++17
+            one-elf-section-per-function: true
+            optimization: level-0
+            warnings: ac5-like-warnings
+          global:
+            output-debug-info: dwarf-3
+          linker:
+            misc-controls: --diag_suppress=L6329
+            output-format: elf
+        scatterFilePath: <YOUR_SCATTER_FILE>.sct
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x5000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x08000000"
+              tag: IROM
+        useCustomScatterFile: false
       GCC:
         archExtensions: ""
         cpuType: Cortex-M3
