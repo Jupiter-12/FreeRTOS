@@ -30,7 +30,8 @@ virtualFolder:
           files: []
           folders: []
         - name: source
-          files: []
+          files:
+            - path: src/freertos/source/list.c
           folders: []
     - name: doc
       files: []
@@ -81,7 +82,7 @@ targets:
             - id: 1
               isChecked: true
               mem:
-                size: "0x5000"
+                size: "0x40000"
                 startAddr: "0x20000000"
               noInit: false
               tag: IRAM
@@ -90,7 +91,7 @@ targets:
               isChecked: true
               isStartup: true
               mem:
-                size: "0x10000"
+                size: "0x100000"
                 startAddr: "0x08000000"
               tag: IROM
         useCustomScatterFile: false
@@ -136,8 +137,8 @@ targets:
         baseAddr: ""
         bin: ""
         cpuInfo:
-          cpuName: "null"
-          vendor: "null"
+          cpuName: STM32F429IG
+          vendor: ST
         otherCmds: ""
         proType: 1
         speed: 8000
