@@ -1,7 +1,6 @@
 #ifndef PORTMACRO_H
 #define PORTMACRO_H
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include "FreeRTOSConfig.h"
@@ -26,5 +25,34 @@ typedef uint16_t TickType_t;
 typedef uint32_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffffffffUL
 #endif
+
+/*
+ * 中断控制状态寄存器：0xe000ed04
+ * Bit 28 PENDSVSET: PendSV 悬起位
+ */
+#define portNVIC_INT_CTRL_REG  (*((volatile uint32_t *)0xe000ed04))
+#define portNVIC_PENDSVSET_BIT (1UL << 28UL)
+
+#define portSY_FULL_READ_WRITE (15)
+
+/* 兼容 ARMCC 的 __dsb/__isb 与 GCC/Clang 的 CMSIS __DSB/__ISB */
+#if defined(__GNUC__) || defined(__clang__)
+/* 这些头在 STM32/CMSIS 工程里通常可用；若你工程头文件路径不同，改成能找到的那个即可 */
+#include "cmsis_armclang.h"
+#ifndef __dsb
+#define __dsb(x) __DSB()
+#endif // __dsb
+#ifndef __isb
+#define __isb(x) __ISB()
+#endif // __isb
+#endif // defined(__GNUC__) || defined(__clang__)
+
+#define portYIELD()                                     \
+    {                                                   \
+        /* 触发 PendSV，产生上下文切换 */               \
+        portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; \
+        __dsb(portSY_FULL_READ_WRITE);                  \
+        __isb(portSY_FULL_READ_WRITE);                  \
+    }
 
 #endif /* PORTMACRO_H */

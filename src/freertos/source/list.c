@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "include/list.h"
 
 void vListInitialiseItem(ListItem_t *const pxItem)
