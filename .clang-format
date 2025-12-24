@@ -87,7 +87,7 @@ BraceWrapping:
   # enum定义后面
   AfterEnum:       false
   # 函数定义后面
-  AfterFunction:   true # true: 只有函数定义后换行 - 这是 K&R 的关键特征
+  AfterFunction:   false # true: 只有函数定义后换行 - 这是 K&R 的关键特征
   # 命名空间定义后面
   AfterNamespace:  false
   AfterObjCDeclaration: false
