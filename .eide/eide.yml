@@ -23,15 +23,14 @@ virtualFolder:
     - name: freertos
       files: []
       folders:
-        - name: RVDS
-          files: []
-          folders: []
         - name: ports
-          files: []
+          files:
+            - path: src/freertos/source/portable/GCC/ARM_CM4/port.c
           folders: []
         - name: source
           files:
             - path: src/freertos/source/list.c
+            - path: src/freertos/source/task.c
           folders: []
     - name: doc
       files: []
