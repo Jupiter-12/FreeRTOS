@@ -3,7 +3,6 @@
 #include "include/portable.h"
 #include "include/task.h"
 
-
 /* 当前正在运行的任务的任务控制块指针，默认初始化为NULL */
 TCB_t *volatile pxCurrentTCB = NULL;
 

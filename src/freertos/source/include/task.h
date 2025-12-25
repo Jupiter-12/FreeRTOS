@@ -6,6 +6,12 @@
 
 #define taskYIELD() portYIELD()
 
+#define taskENTER_CRITICAL()          portENTER_CRITICAL()              /* 进入临界段，不带中断保护版本，不能嵌套 */
+#define taskENTER_CRITICAL_FROM_ISR() portSET_INTERRUPT_MASK_FROM_ISR() /* 进入临界段，带中断保护版本，可以嵌套 */
+
+#define taskEXIT_CRITICAL()           portEXIT_CRITICAL()                  /* 退出临界段，不带中断保护版本，不能嵌套 */
+#define taskEXIT_CRITICAL_FROM_ISR(x) portCLEAR_INTERRUPT_MASK_FROM_ISR(x) /* 退出临界段，带中断保护版本，可以嵌套 */
+
 typedef struct tskTaskControlBlock
 {
     volatile StackType_t *pxTopOfStack; /* 栈顶 */

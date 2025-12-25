@@ -18,10 +18,19 @@
 #define portNVIC_PENDSV_PRI  (((uint32_t)configKERNEL_INTERRUPT_PRIORITY) << 16UL)
 #define portNVIC_SYSTICK_PRI (((uint32_t)configKERNEL_INTERRUPT_PRIORITY) << 24UL)
 
+/* 用于嵌套临界区管理的变量，在调度器启动时会被重新初始化为 0 ：
+vTaskStartScheduler()->xPortStartScheduler()->uxCriticalNesting = 0 */
+static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
+
 void prvStartFirstTask( void );
 void vPortSVCHandler( void );
 void xPortPendSVHandler( void );
 
+/*
+*************************************************************************
+*                              任务栈初始化函数
+*************************************************************************
+*/
 static void prvTaskExitError(void)
 {
     /* 函数停止在这里 */
@@ -266,3 +275,35 @@ __attribute__((naked)) void xPortPendSVHandler(void)
 }
 
 #endif /* compiler switch */
+
+/*
+*************************************************************************
+*                             临界段相关函数
+*************************************************************************
+*/
+void vPortEnterCritical(void)
+{
+    portDISABLE_INTERRUPTS();
+    uxCriticalNesting++;
+
+    /* This is not the interrupt safe version of the enter critical function so
+    assert() if it is being called from an interrupt context.  Only API
+    functions that end in "FromISR" can be used in an interrupt.  Only assert if
+    the critical nesting count is 1 to protect against recursive calls if the
+    assert function also uses a critical section. */
+    if (uxCriticalNesting == 1)
+    {
+        // configASSERT((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0);
+    }
+}
+
+void vPortExitCritical(void)
+{
+    // configASSERT(uxCriticalNesting);
+    uxCriticalNesting--;
+
+    if (uxCriticalNesting == 0)
+    {
+        portENABLE_INTERRUPTS();
+    }
+}
