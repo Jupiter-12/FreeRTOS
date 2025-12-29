@@ -83,7 +83,7 @@ UBaseType_t uxListRemove(ListItem_t *const pxItemToRemove)
     pxItemToRemove->pxNext->pxPrevious = pxItemToRemove->pxPrevious;
     pxItemToRemove->pxPrevious->pxNext = pxItemToRemove->pxNext;
 
-    /*调整链表的节点索引指针 */
+    /* 调整链表的节点索引指针 */
     if (pxList->pxIndex == pxItemToRemove)
     {
         pxList->pxIndex = pxItemToRemove->pxPrevious;

@@ -18,6 +18,11 @@ StackType_t Task2Stack[TASK2_STACK_SIZE];
 TCB_t Task1TCB;
 TCB_t Task2TCB;
 
+/* 定义空闲任务的栈 */
+StackType_t IdleTaskStack[configMINIMAL_STACK_SIZE];
+/* 定义空闲任务的任务控制块 */
+TCB_t IdleTaskTCB;
+
 void delay(uint32_t count);
 void Task1_Entry(void *p_arg);
 void Task2_Entry(void *p_arg);
@@ -73,12 +78,9 @@ void Task1_Entry(void *p_arg)
     for (;;)
     {
         flag1 = 1;
-        delay(100);
+        vTaskDelay(2);
         flag1 = 0;
-        delay(100);
-
-        /* 任务切换，这里是手动切换 */
-        taskYIELD();
+        vTaskDelay(2);
     }
 }
 
@@ -88,11 +90,20 @@ void Task2_Entry(void *p_arg)
     for (;;)
     {
         flag2 = 1;
-        delay(100);
+        vTaskDelay(2);
         flag2 = 0;
-        delay(100);
-
-        /* 任务切换，这里是手动切换 */
-        taskYIELD();
+        vTaskDelay(2);
     }
+}
+
+/* 获取空闲任务的内存 */
+// StackType_t IdleTaskStack[configMINIMAL_STACK_SIZE];
+// TCB_t       IdleTaskTCB;
+void vApplicationGetIdleTaskMemory(TCB_t       **ppxIdleTaskTCBBuffer,
+                                   StackType_t **ppxIdleTaskStackBuffer,
+                                   uint32_t     *pulIdleTaskStackSize)
+{
+    *ppxIdleTaskTCBBuffer   = &IdleTaskTCB;
+    *ppxIdleTaskStackBuffer = IdleTaskStack;
+    *pulIdleTaskStackSize   = configMINIMAL_STACK_SIZE;
 }

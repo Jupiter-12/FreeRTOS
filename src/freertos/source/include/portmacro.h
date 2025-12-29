@@ -52,6 +52,7 @@ typedef uint32_t TickType_t;
 
 #define portENTER_CRITICAL() vPortEnterCritical() /* 进入临界段，不带中断保护版本，不能嵌套 */
 #define portEXIT_CRITICAL()  vPortExitCritical()  /* 退出临界段，不带中断保护版本，不能嵌套 */
+/* ================================== */
 
 /* 兼容 ARMCC / GCC / Clang：建议放头文件里用 static inline，避免多重定义 */
 #if defined(__CC_ARM) && !defined(__clang__)
@@ -98,6 +99,17 @@ static portFORCE_INLINE void vPortSetBASEPRI(uint32_t ulBASEPRI)
     __asm
     {
         msr basepri, ulBASEPRI
+    }
+}
+
+static portFORCE_INLINE void vPortClearBASEPRIFromISR(void)
+{
+    __asm
+    {
+        /* Set BASEPRI to 0 so no interrupts are masked.  This function is only
+        used to lower the mask in an interrupt, so memory barriers are not
+        used. */
+		msr basepri, #0
     }
 }
 #elif defined(__GNUC__) || defined(__clang__)
@@ -166,6 +178,20 @@ static portFORCE_INLINE void vPortSetBASEPRI(uint32_t ulBASEPRI)
         : "r"(ulBASEPRI)
         : "memory");
 }
+
+static portFORCE_INLINE void vPortClearBASEPRIFromISR(void)
+{
+    // __set_BASEPRI(0);
+
+    __asm volatile(
+        /* Set BASEPRI to 0 so no interrupts are masked.  This function is only
+        used to lower the mask in an interrupt, so memory barriers are not
+        used. */
+        "msr basepri, %0   \n"
+        :
+        : "r"(0U)
+        : "memory");
+}
 #else
 
 #define portINLINE inline
@@ -174,5 +200,7 @@ static portFORCE_INLINE void vPortSetBASEPRI(uint32_t ulBASEPRI)
 #endif /* portFORCE_INLINE */
 
 #endif /* defined(__CC_ARM) && !defined(__clang__) */
+
+#define portTASK_FUNCTION(vFunction, pvParameters) void vFunction(void *pvParameters)
 
 #endif /* PORTMACRO_H */

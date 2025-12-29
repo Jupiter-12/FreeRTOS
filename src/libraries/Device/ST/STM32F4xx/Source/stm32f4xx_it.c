@@ -22,7 +22,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-#include "main.h"
+// #include "main.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -105,9 +105,9 @@ void UsageFault_Handler(void)
   * @param  None
   * @retval None
   */
-void SVC_Handler(void)
-{
-}
+// void SVC_Handler(void)
+// {
+// }
 
 /**
   * @brief  This function handles Debug Monitor exception.
@@ -123,19 +123,19 @@ void DebugMon_Handler(void)
   * @param  None
   * @retval None
   */
-void PendSV_Handler(void)
-{
-}
+// void PendSV_Handler(void)
+// {
+// }
 
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
-{
-  TimingDelay_Decrement();
-}
+// void SysTick_Handler(void)
+// {
+//   TimingDelay_Decrement();
+// }
 
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */

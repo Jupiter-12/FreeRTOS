@@ -1,5 +1,6 @@
-// #include "../../../include/task.h"
 #include "../../../include/portable.h"
+#include "../../../include/task.h"
+
 
 // #include "stm32f4xx.h"
 
@@ -18,6 +19,22 @@
 #define portNVIC_PENDSV_PRI  (((uint32_t)configKERNEL_INTERRUPT_PRIORITY) << 16UL)
 #define portNVIC_SYSTICK_PRI (((uint32_t)configKERNEL_INTERRUPT_PRIORITY) << 24UL)
 
+/* SysTick 配置寄存器 */
+#define portNVIC_SYSTICK_CTRL_REG (*((volatile uint32_t *)0xe000e010)) /* SysTick 控制寄存器 */
+#define portNVIC_SYSTICK_LOAD_REG (*((volatile uint32_t *)0xe000e014)) /* SysTick 重装载寄存器 */
+
+/* SysTick 时钟源选择 */
+#ifndef configSYSTICK_CLOCK_HZ
+#define configSYSTICK_CLOCK_HZ configCPU_CLOCK_HZ
+/* 确保 SysTick 的时钟与内核时钟一致 */
+#define portNVIC_SYSTICK_CLK_BIT (1UL << 2UL)
+#else
+#define portNVIC_SYSTICK_CLK_BIT (0)
+#endif /* configSYSTICK_CLOCK_HZ */
+
+#define portNVIC_SYSTICK_INT_BIT    (1UL << 1UL)
+#define portNVIC_SYSTICK_ENABLE_BIT (1UL << 0UL)
+
 /* 用于嵌套临界区管理的变量，在调度器启动时会被重新初始化为 0 ：
 vTaskStartScheduler()->xPortStartScheduler()->uxCriticalNesting = 0 */
 static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
@@ -25,6 +42,7 @@ static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
 void prvStartFirstTask( void );
 void vPortSVCHandler( void );
 void xPortPendSVHandler( void );
+static void vPortSetupTimerInterrupt(void);
 
 /*
 *************************************************************************
@@ -65,6 +83,9 @@ BaseType_t xPortStartScheduler(void)
     /* 配置 PendSV 和 SysTick 的中断优先级为最低 */
     portNVIC_SYSPRI2_REG |= portNVIC_PENDSV_PRI;
     portNVIC_SYSPRI2_REG |= portNVIC_SYSTICK_PRI;
+
+    /* 初始化 SysTick */
+    vPortSetupTimerInterrupt();
 
     /* 启动第一个任务，不再返回 */
     prvStartFirstTask();
@@ -276,6 +297,18 @@ __attribute__((naked)) void xPortPendSVHandler(void)
 
 #endif /* compiler switch */
 
+void xPortSysTickHandler(void)
+{
+    /* 关中断 */
+    vPortRaiseBASEPRI();
+
+    /* 更新系统时基 */
+    xTaskIncrementTick();
+
+    /* 开中断 */
+    vPortClearBASEPRIFromISR();
+}
+
 /*
 *************************************************************************
 *                             临界段相关函数
@@ -306,4 +339,22 @@ void vPortExitCritical(void)
     {
         portENABLE_INTERRUPTS();
     }
+}
+
+/*
+*************************************************************************
+*                             初始化SysTick
+*************************************************************************
+*/
+static void vPortSetupTimerInterrupt(void)
+{
+    /* 设置重装载寄存器的值 */
+    portNVIC_SYSTICK_LOAD_REG = (configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ) - 1UL;
+
+    /* 设置系统定时器的时钟等于内核时钟
+    使能 SysTick 定时器中断
+    使能 SysTick 定时器 */
+    portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT |
+                                 portNVIC_SYSTICK_INT_BIT |
+                                 portNVIC_SYSTICK_ENABLE_BIT);
 }

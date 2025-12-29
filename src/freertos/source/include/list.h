@@ -43,20 +43,25 @@
 #define listCURRENT_LIST_LENGTH(pxList) \
     ((pxList)->uxNumberOfItems)
 
-/* 获取链表第一个节点的 OWNER，即 TCB */
-#define listGET_OWNER_OF_NEXT_ENTRY(pxTCB, pxList)                                \
-    {                                                                             \
-        List_t *const pxConstList = (pxList);                                     \
-        /* 节点索引指向链表第一个节点 */                                          \
-        (pxConstList)->pxIndex = (pxConstList)->pxIndex->pxNext;                  \
-        /* 这个操作有啥用？ */                                                    \
-        if ((void *)(pxConstList)->pxIndex == (void *)&((pxConstList)->xListEnd)) \
-        {                                                                         \
-            (pxConstList)->pxIndex = (pxConstList)->pxIndex->pxNext;              \
-        }                                                                         \
-        /* 获取节点的 OWNER，即 TCB */                                            \
-        (pxTCB) = (pxConstList)->pxIndex->pvOwner;                                \
+/* 获取链表节点的 OWNER，即 TCB */
+#define listGET_OWNER_OF_NEXT_ENTRY(pxTCB, pxList)                                                            \
+    {                                                                                                         \
+        List_t *const pxConstList = (pxList);                                                                 \
+        /* 节点索引指向链表第一个节点调整节点索引指针，指向下一个节点，         \
+           如果当前链表有N个节点，当第N次调用该函数时，pxInedex则指向第N个节点 */ \
+        (pxConstList)->pxIndex = (pxConstList)->pxIndex->pxNext;                                              \
+        /* 当前链表为空 */                                                                                    \
+        if ((void *)(pxConstList)->pxIndex == (void *)&((pxConstList)->xListEnd))                             \
+        {                                                                                                     \
+            (pxConstList)->pxIndex = (pxConstList)->pxIndex->pxNext;                                          \
+        }                                                                                                     \
+        /* 获取节点的 OWNER，即 TCB */                                                                        \
+        (pxTCB) = (pxConstList)->pxIndex->pvOwner;                                                            \
     }
+
+/* 获取链表第一个节点的 OWNER，即 TCB */
+#define listGET_OWNER_OF_HEAD_ENTRY(pxList) \
+    ((&((pxList)->xListEnd))->pxNext->pvOwner)
 
 struct xLIST_ITEM
 {

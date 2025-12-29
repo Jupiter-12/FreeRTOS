@@ -10,6 +10,12 @@
 #define configKERNEL_INTERRUPT_PRIORITY      255 /* 高四位有效，即等于0xff，或者是15 */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY 191 /* 中断优先级配置，高四位有效，即等于0xb0，或者是11 */
 
+#define configMINIMAL_STACK_SIZE ((unsigned short)128) /* 最小任务栈大小，单位为字，即 512个字节 */
+
+/* 时钟频率和节拍频率的配置 */
+#define configCPU_CLOCK_HZ ((unsigned long)180000000)
+#define configTICK_RATE_HZ ((TickType_t)100)
+
 #define xPortPendSVHandler  PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
 #define vPortSVCHandler     SVC_Handler
