@@ -12,6 +12,7 @@ virtualFolder:
       files:
         - path: src/user/main.c
         - path: src/libraries/Device/ST/STM32F4xx/Source/system_stm32f4xx.c
+        - path: src/libraries/Device/ST/STM32F4xx/Source/stm32f4xx_it.c
       folders: []
     - name: libraries
       files: []
