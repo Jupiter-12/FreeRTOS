@@ -44,6 +44,9 @@ typedef uint32_t TickType_t;
     }
 
 /* ==========临界区管理=============== */
+extern void vPortEnterCritical(void);
+extern void vPortExitCritical(void);
+
 #define portENABLE_INTERRUPTS()  vPortSetBASEPRI(0)  /* 不带中断保护的开中断函数 */
 #define portDISABLE_INTERRUPTS() vPortRaiseBASEPRI() /* 不带返回值的关中断函数，不能嵌套，不能在中断里面使用 */
 
@@ -53,6 +56,32 @@ typedef uint32_t TickType_t;
 #define portENTER_CRITICAL() vPortEnterCritical() /* 进入临界段，不带中断保护版本，不能嵌套 */
 #define portEXIT_CRITICAL()  vPortExitCritical()  /* 退出临界段，不带中断保护版本，不能嵌套 */
 /* ================================== */
+
+#ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
+#endif /* 默认使用优化的任务选择方法 */
+
+#if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
+
+/* 检测优先级配置 */
+#if (configMAX_PRIORITIES > 32)
+#error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice.
+#endif /* configMAX_PRIORITIES */
+
+/* 根据优先级设置/清除优先级位图中相应的位 */
+#define portRECORD_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) |= (1UL << (uxPriority))
+#define portRESET_READY_PRIORITY(uxPriority, uxReadyPriorities)  (uxReadyPriorities) &= ~(1UL << (uxPriority))
+
+/*-----------------------------------------------------------*/
+
+#define portGET_HIGHEST_PRIORITY(uxTopPriority, uxReadyPriorities)         \
+    do                                                                     \
+    {                                                                      \
+        /* uxReadyPriorities 必须非 0，否则 CLZ 结果不可用 */              \
+        (uxTopPriority) = (31UL - (uint32_t)portCLZ((uxReadyPriorities))); \
+    } while (0)
+
+#endif /* taskRECORD_READY_PRIORITY */
 
 /* 兼容 ARMCC / GCC / Clang：建议放头文件里用 static inline，避免多重定义 */
 #if defined(__CC_ARM) && !defined(__clang__)
@@ -69,6 +98,9 @@ typedef uint32_t TickType_t;
 #ifndef portFORCE_INLINE
 #define portFORCE_INLINE __forceinline
 #endif /* portFORCE_INLINE */
+
+/* ARMCC(AC5) 通常提供 __clz */
+#define portCLZ(x) __clz((x))
 
 static portFORCE_INLINE void vPortRaiseBASEPRI(void)
 {
@@ -128,6 +160,9 @@ static portFORCE_INLINE void vPortClearBASEPRIFromISR(void)
 #ifndef portFORCE_INLINE
 #define portFORCE_INLINE __attribute__((always_inline)) inline
 #endif /* portFORCE_INLINE */
+
+/* 统一 CLZ：优先用 clang/gcc 的 __builtin_clz，避免 __clz 名称差异 */
+#define portCLZ(x) __builtin_clz((unsigned int)(x))
 
 static portFORCE_INLINE void vPortRaiseBASEPRI(void)
 {
@@ -198,6 +233,8 @@ static portFORCE_INLINE void vPortClearBASEPRIFromISR(void)
 #ifndef portFORCE_INLINE
 #define portFORCE_INLINE inline
 #endif /* portFORCE_INLINE */
+
+#error "No CLZ implementation for this compiler."
 
 #endif /* defined(__CC_ARM) && !defined(__clang__) */
 
