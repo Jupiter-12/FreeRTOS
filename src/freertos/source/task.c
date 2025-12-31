@@ -182,9 +182,6 @@ void prvInitialiseTaskLists(void)
     pxOverflowDelayedTaskList = &xDelayedTaskList2;
 }
 
-extern TCB_t Task1TCB;
-extern TCB_t Task2TCB;
-
 extern TCB_t IdleTaskTCB;
 extern void  vApplicationGetIdleTaskMemory(TCB_t       **ppxIdleTaskTCBBuffer,
                                            StackType_t **ppxIdleTaskStackBuffer,
