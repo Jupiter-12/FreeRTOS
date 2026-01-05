@@ -240,10 +240,12 @@ void vTaskDelay(const TickType_t xTicksToDelay)
 }
 
 /* 系统时基滴答更新函数 */
-void xTaskIncrementTick(void)
+// void xTaskIncrementTick(void)
+BaseType_t xTaskIncrementTick(void)
 {
     TCB_t     *pxTCB = NULL;
     TickType_t xItemValue;
+    BaseType_t xSwitchRequired = pdFALSE;
 
     /* 更新系统时基计数器 xTickCount，xTickCount 是一个在 port.c 中定义的全局变量 */
     const TickType_t xConstTickCount = xTickCount + 1;
@@ -283,12 +285,32 @@ void xTaskIncrementTick(void)
 
                 /* 将解除等待的任务添加到就绪列表 */
                 prvAddTaskToReadyList(pxTCB);
+
+#if (configUSE_PREEMPTION == 1)
+                {
+                    if (pxTCB->uxPriority >= pxCurrentTCB->uxPriority)
+                    {
+                        xSwitchRequired = pdTRUE;
+                    }
+                }
+#endif /* configUSE_PREEMPTION */
             }
         }
     } /* xConstTickCount >= xNextTaskUnblockTime */
 
+#if ((configUSE_PREEMPTION == 1) && (configUSE_TIME_SLICING == 1))
+    {
+        if (listCURRENT_LIST_LENGTH(&(pxReadyTasksLists[pxCurrentTCB->uxPriority])) > (UBaseType_t)1)
+        {
+            xSwitchRequired = pdTRUE;
+        }
+    }
+#endif /* ( ( configUSE_PREEMPTION == 1 ) && ( configUSE_TIME_SLICING == 1 ) ) */
+
     /* 任务切换 */
-    portYIELD();
+    // portYIELD();
+
+    return xSwitchRequired;
 }
 
 /* 初始化并创建一个新的任务 */

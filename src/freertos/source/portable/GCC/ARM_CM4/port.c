@@ -302,8 +302,17 @@ void xPortSysTickHandler(void)
     /* 关中断 */
     vPortRaiseBASEPRI();
 
-    /* 更新系统时基 */
-    xTaskIncrementTick();
+    {
+        // xTaskIncrementTick();
+
+        /* 更新系统时基 */
+        if (xTaskIncrementTick() != pdFALSE)
+        {
+            /* 任务切换，即触发 PendSV */
+            // portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
+            taskYIELD();
+        }
+    }
 
     /* 开中断 */
     vPortClearBASEPRIFromISR();

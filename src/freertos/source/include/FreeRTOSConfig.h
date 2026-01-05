@@ -16,6 +16,9 @@
 #define configCPU_CLOCK_HZ ((unsigned long)180000000)
 #define configTICK_RATE_HZ ((TickType_t)100)
 
+#define configUSE_PREEMPTION 1 /* 使用抢占式调度 */
+// #define configUSE_TIME_SLICING 1 /* 使用时间片轮转调度 */
+
 #define xPortPendSVHandler  PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
 #define vPortSVCHandler     SVC_Handler

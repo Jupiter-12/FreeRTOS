@@ -47,6 +47,7 @@ void prvInitialiseTaskLists(void);
 void vTaskStartScheduler(void);
 void vTaskSwitchContext(void);
 void vTaskDelay(const TickType_t xTicksToDelay);
-void xTaskIncrementTick(void);
+// void xTaskIncrementTick(void);
+BaseType_t xTaskIncrementTick(void);
 
 #endif /* TASK_H */
